@@ -11,24 +11,27 @@ Import and call `playdate.scoreboards.initialize`. This will check for official 
 ```lua
 import "pdScoreboards"
 
-playdate.scoreboards.initialize({
-    { 
-        boardID = "highscores", 
-        name = "High Scores" 
+playdate.scoreboards.initialize(
+    {
+        {
+            boardID = "highscores", 
+            name = "High Scores" 
         },
-    { 
-        boardID = "lowscores", 
-        name = "Low Scores", 
-        order="ascending" 
-    }
-}, function(status, _)
-    print("Loaded scoreboards!")
-    if status.code = "OK" then
-        print("You're using official scoreboards!")
-    else
-        print("You're not using official scoreboards, but that's okay!")
+        {
+            boardID = "lowscores", 
+            name = "Low Scores", 
+            order="ascending" 
+        }
+    },
+    function(status, _)
+        print("Loaded scoreboards!")
+        if status.code = "OK" then
+            print("You're using official scoreboards!")
+        else
+            print("You're not using official scoreboards, but that's okay!")
+        end
     end
-end)
+)
 ```
 
 > NOTE: Scoreboards must be first created with an internet connection.
