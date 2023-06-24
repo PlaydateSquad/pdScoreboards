@@ -41,7 +41,7 @@ playdate.scoreboards.initialize(
 
 Checks Panic's servers for any authorized scoreboards. If it fails, it will create local boards using the boards passed in. It will skip the server check if it's already tried, failed, and created local scoreboards.
 
-* `boards` is an array of the format `{ boardID = [id], name = [name], order  ["ascending"/"descending"] }` (order is optional, defaults to descending)
+* `boards` is an array of the format `{ boardID = [id], name = [name], order = ["ascending"/"descending"] }` (order is optional, defaults to descending)
 * `callback` is a function with the arguments `status`, the response from panic's servers, and `result`, `nil`
 * `path` is the path to the scoreboards file, defaults to `Data/scoreboards.json` (omit `.json` in the path)
 
