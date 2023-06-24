@@ -39,7 +39,7 @@ playdate.scoreboards.initialize(
 
 #### `playdate.scoreboards.initialize(boards, callback, path)`
 
-Checks Panic's servers for any authorized scoreboards. If it fails, it will create local boards using the boards passed in. 
+Checks Panic's servers for any authorized scoreboards. If it fails, it will create local boards using the boards passed in. It will skip the server check if it's already tried, failed, and created local scoreboards.
 
 * `boards` is an array of the format `{ boardID = [id], name = [name], order  ["ascending"/"descending"] }` (order is optional, defaults to descending)
 * `callback` is a function with the arguments `status`, the response from panic's servers, and `result`, `nil`

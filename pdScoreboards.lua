@@ -3,13 +3,8 @@ local scoreboards_file, scoreboards = nil, nil
 local function _save()
     playdate.datastore.write(scoreboards, scoreboards_file)
 end
-local function _callback(callback, result, ok)
-    if ok == nil then
-        -- Default to true
-        callback({ code = "OK", message = "OK" }, result)
-    else
-        callback({ code = "ERROR", message = "Something went wrong" }, result)
-    end
+local function _callback(callback, result)
+    callback({ code = "OK", message = "OK" }, result)
 end
 
 local function _update_ranks(boardId)
@@ -149,16 +144,22 @@ function playdate.scoreboards.initialize(boards, callback, path)
     --     { boardID = "highscores", name = "High Scores" },
     --     { boardID = "lowscores", name = "Low Scores", order="ascending" }
     -- })
+    playdate._scoreboards = playdate.scoreboards  -- Store a backup of the functions
+    scoreboards_file = path or "scoreboards"  -- Default to Data/scoreboards.json
+    scoreboards = playdate.datastore.read(scoreboards_file)
+
+    -- If we've already detected that we aren't authorized, then don't check again
+    if scoreboards ~= nil and scoreboards.not_authorized then
+        _init_scoreboards(boards)
+        callback({ code = "ERROR", message = "Local scoreboards already initialized" }, nil)
+        return
+    end
 
     playdate.scoreboards.getScoreboards(function(status, _)
         if status.code == "OK" then
             callback(status, nil)
             return
         end
-
-        playdate._scoreboards = playdate.scoreboards  -- Store a backup of the functions
-        scoreboards_file = path or "scoreboards"  -- Default to Data/scoreboards.json
-        scoreboards = playdate.datastore.read(scoreboards_file)
 
         if status.message == "Authentication credentials were not provided." then
             -- If we can't authenticate, then use local because device isn't registered
