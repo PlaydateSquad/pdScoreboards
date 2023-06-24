@@ -20,7 +20,7 @@ playdate.scoreboards.initialize(
         {
             boardID = "lowscores", 
             name = "Low Scores", 
-            order="ascending" 
+            order = "ascending" 
         }
     },
     function(status, _)
