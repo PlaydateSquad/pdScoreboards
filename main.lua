@@ -58,7 +58,6 @@ playdate.scoreboards.initialize({
     { boardID = "highscores", name = "High Scores" },
     { boardID = "lowscores", name = "Low Scores", order="ascending" }
 }, function(status, _)
-    print("Loaded scoreboards!")
     if status.code ~= "OK" then
         updateScoreboard("high")
         updateScoreboard("low")

@@ -24,7 +24,6 @@ playdate.scoreboards.initialize(
         }
     },
     function(status, _)
-        print("Loaded scoreboards!")
         if status.code = "OK" then
             print("You're using official scoreboards!")
         else
