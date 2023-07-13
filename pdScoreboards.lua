@@ -62,9 +62,29 @@ local function _init_scoreboards(boards)
             lastUpdated = scoreboards.lastUpdated,
             scores = {}
         }
-        for index = 1, #scoreboards.boards do
-            if scoreboards.boards[index].boardID == boardID then
-                result.scores = scoreboards.boards[index].scores
+        for board_index = 1, #scoreboards.boards do
+            if scoreboards.boards[board_index].boardID == boardID then
+                local board = scoreboards.boards[board_index]
+                local found = false
+                for score_index = 1, #board.scores do
+                    local score = board.scores[score_index]
+                    -- Always insert to 10
+                    if score_index <= 10 then
+                        table.insert(result.scores, score)
+                        -- If we found the player, we won't have to do any more checks
+                        if score.player == scoreboards.player then
+                            found = true
+                        end
+                    -- If we haven't found the player's score, find it
+                    elseif not found and score.player == scoreboards.player then
+                        table.insert(result.scores, score)
+                        found = true
+                    -- If both conditions are met, we can stop
+                    elseif score_index > 10 and found then
+                        break
+                    end
+                end
+
                 break
             end
         end
@@ -161,17 +181,15 @@ function playdate.scoreboards.initialize(boards, callback, path)
             return
         end
 
-        if status.message == "Authentication credentials were not provided." then
-            -- If we can't authenticate, then use local because device isn't registered
-            print("Cannot authenticate with Panic's servers, is your device registered?")
-            _init_scoreboards(boards)
-        elseif status.message:match("A game with the provided bundle_id .* does not exist") then
-            _init_scoreboards(boards)
-        elseif status.message == "Wi-Fi not available" then
+        if status.message == "Wi-Fi not available" then
             -- You must initialize the scoreboards with an internet connection before they can be used
             if scoreboards == nil or scoreboards.not_authorized == nil or scoreboards.not_authorized then
                 _init_scoreboards(boards)
             end
+        else
+            -- Generic error, e.g. "A game with the provided bundle_id .* does not exist", "Bad response from server" etc.
+            print(status.message)
+            _init_scoreboards(boards)
         end
         callback(status, nil)
     end)
