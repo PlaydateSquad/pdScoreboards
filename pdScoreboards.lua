@@ -23,7 +23,6 @@ end
 local function _init_scoreboards(boards)
     if scoreboards == nil then
         scoreboards = {
-            not_authorized = true,  -- On first setup this will let it work offline
             player = "",
             lastUpdated = playdate.getSecondsSinceEpoch(),
             boards = {}
@@ -168,13 +167,6 @@ function playdate.scoreboards.initialize(boards, callback, path)
     scoreboards_file = path or "scoreboards"  -- Default to Data/scoreboards.json
     scoreboards = playdate.datastore.read(scoreboards_file)
 
-    -- If we've already detected that we aren't authorized, then don't check again
-    if scoreboards ~= nil and scoreboards.not_authorized then
-        _init_scoreboards(boards)
-        callback({ code = "ERROR", message = "Local scoreboards already initialized" }, nil)
-        return
-    end
-
     playdate.scoreboards.getScoreboards(function(status, _)
         if status.code == "OK" then
             callback(status, nil)
@@ -182,12 +174,11 @@ function playdate.scoreboards.initialize(boards, callback, path)
         end
 
         if status.message == "Wi-Fi not available" then
-            -- You must initialize the scoreboards with an internet connection before they can be used
-            if scoreboards == nil or scoreboards.not_authorized == nil or scoreboards.not_authorized then
+            if scoreboards ~= nil then  -- Only use offline if we've already created them online
                 _init_scoreboards(boards)
             end
         else
-            -- Generic error, e.g. "A game with the provided bundle_id .* does not exist", "Bad response from server" etc.
+            -- Other errors, e.g. "A game with the provided bundle_id .* does not exist", "Bad response from server" etc.
             print(status.message)
             _init_scoreboards(boards)
         end
